@@ -318,3 +318,11 @@ def yojsticControl():
                     print('+autoDrive')
 
 
+while True
+    if auto:
+        if forward_distance() > vijlighijdsmarge:
+            forward()
+        else:
+            stop()
+
+            
