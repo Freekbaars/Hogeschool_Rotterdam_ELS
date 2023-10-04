@@ -10,4 +10,4 @@ opdrachten:
 - 6
 - 7
 
-autotje
+autotje: main funties gedefineerd
