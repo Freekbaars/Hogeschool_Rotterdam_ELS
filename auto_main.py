@@ -157,3 +157,4 @@ while True:
     stop_if_obstacle()
 
     time.sleep(0.1)  # Kleinere pauze om de responsiviteit te verhogen
+    
