@@ -12,14 +12,10 @@ opdrachten:
 
 autotje:
 
-|1|1|1|
-|2|2|2|
+- leerdoel 1 (1)
+- leerdoel 2 (2)
+- leerdoel 3 (1)
 
-
-leerdoel 1 ()
-leerdeol 2
-leerdoel 3
-
-leerdoel 4
-leerdoel 5
-leerdoel 6
+- leerdoel 4 (3)
+- leerdoel 5 (3)
+- leerdoel 6 (word op het laatst verbeterd)
