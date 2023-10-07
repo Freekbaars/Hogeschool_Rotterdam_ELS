@@ -3,6 +3,7 @@ import time
 import pwmio
 import analogio
 import math
+import neopixel
 
 # Definieer pinnen
 x_pin = board.A0  # Analoge X-as van de joystick
@@ -12,6 +13,14 @@ in1_pin = board.D0
 in2_pin = board.D1
 in3_pin = board.D2
 in4_pin = board.D3
+
+# Definieer NeoPixel
+num_pixels = 1
+neopixel_pin = board.NEOPIXEL
+pixels = neopixel.NeoPixel(neopixel_pin, num_pixels, brightness=0.3)
+
+# Definieer de drempelwaarde als een aanpasbare variabele
+drempel_percentage = 5 / 100  # Stel hier je gewenste drempelwaarde in
 
 # Pin-initialisatie
 in1 = pwmio.PWMOut(in1_pin, frequency=1000, duty_cycle=0)  # Pas de frequentie aan indien nodig
@@ -23,10 +32,34 @@ in4 = pwmio.PWMOut(in4_pin, frequency=1000, duty_cycle=0)  # Pas de frequentie a
 x_axis = analogio.AnalogIn(x_pin)
 y_axis = analogio.AnalogIn(y_pin)
 
+# Variabele voor NeoPixel-knipperen
+neo_pixel_on = False
+
 # Functies voor beweging
 def drive_motors(left_speed, right_speed):
     left_speed = min(max(-max_speed, left_speed), max_speed)
     right_speed = min(max(-max_speed, right_speed), max_speed)
+
+    global neo_pixel_on  # Gebruik de globale variabele
+
+    if abs(x_normalized) < drempel_percentage and abs(y_normalized) < drempel_percentage:
+        # Als de joystick binnen de drempel valt, schakel NeoPixel in rood in en laat deze knipperen
+        neo_pixel_on = not neo_pixel_on  # Toggle de status van de NeoPixel
+        if neo_pixel_on:
+            pixels.fill((255, 0, 0))  # Rood
+        else:
+            pixels.fill((0, 0, 0))  # Uit
+
+        # Schakel de motoren uit
+        left_speed = 0
+        right_speed = 0
+    else:
+        # Zo niet, schakel NeoPixel uit
+        neo_pixel_on = False
+        if left_speed != 0 or right_speed != 0:
+            pixels.fill((0, 0, 255))  # Blauw
+        else:
+            pixels.fill((0, 0, 0))  # Uit
 
     if left_speed >= 0:
         left_FWD(left_speed)
