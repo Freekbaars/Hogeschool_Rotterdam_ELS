@@ -4,13 +4,7 @@ import pwmio
 import analogio
 import math
 import neopixel
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 import adafruit_hcsr04
->>>>>>> 5cadfd08851067d57c3ede694a23865a0e376109
-=======
->>>>>>> 23df411b49887d1b9cc202f812ec887a8667a14e
 
 # Definieer pinnen
 x_pin = board.A0  # Analoge X-as van de joystick
@@ -21,15 +15,9 @@ in2_pin = board.D1
 in3_pin = board.D2
 in4_pin = board.D3
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 trigger_pin = board.D8
 echo_pin = board.D9
 
->>>>>>> 5cadfd08851067d57c3ede694a23865a0e376109
-=======
->>>>>>> 23df411b49887d1b9cc202f812ec887a8667a14e
 # Definieer NeoPixel
 num_pixels = 1
 neopixel_pin = board.NEOPIXEL
@@ -37,14 +25,8 @@ pixels = neopixel.NeoPixel(neopixel_pin, num_pixels, brightness=0.3)
 
 # Definieer de drempelwaarde als een aanpasbare variabele
 drempel_percentage = 5 / 100  # Stel hier je gewenste drempelwaarde in
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 buffer_afstand = 10  # Stel hier de gewenste bufferafstand in (in centimeters)
 achteruit_rijd_tijd = 1.0  # Tijd om achteruit te rijden in seconden
->>>>>>> 5cadfd08851067d57c3ede694a23865a0e376109
-=======
->>>>>>> 23df411b49887d1b9cc202f812ec887a8667a14e
 
 # Pin-initialisatie
 in1 = pwmio.PWMOut(in1_pin, frequency=1000, duty_cycle=0)  # Pas de frequentie aan indien nodig
@@ -56,15 +38,9 @@ in4 = pwmio.PWMOut(in4_pin, frequency=1000, duty_cycle=0)  # Pas de frequentie a
 x_axis = analogio.AnalogIn(x_pin)
 y_axis = analogio.AnalogIn(y_pin)
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 # Sonarsensor-initialisatie
 sonar = adafruit_hcsr04.HCSR04(trigger_pin, echo_pin)
 
->>>>>>> 5cadfd08851067d57c3ede694a23865a0e376109
-=======
->>>>>>> 23df411b49887d1b9cc202f812ec887a8667a14e
 # Variabele voor NeoPixel-knipperen
 neo_pixel_on = False
 
