@@ -25,8 +25,18 @@ y_axis = analogio.AnalogIn(y_pin)
 
 # Functies voor beweging
 def drive_motors(left_speed, right_speed):
-    left_FWD(left_speed)
-    right_FWD(right_speed)
+    left_speed = min(max(-max_speed, left_speed), max_speed)
+    right_speed = min(max(-max_speed, right_speed), max_speed)
+
+    if left_speed >= 0:
+        left_FWD(left_speed)
+    else:
+        left_BWD(-left_speed)
+
+    if right_speed >= 0:
+        right_FWD(right_speed)
+    else:
+        right_BWD(-right_speed)
 
 def left_FWD(DutyF):
     set_pwm_duty_cycle(in1, DutyF)
@@ -68,14 +78,17 @@ while True:
     max_speed = 2**16 - 1
 
     x_normalized = (x_value - x_center) / x_center
-    y_normalized = (y_value - y_center) / y_center
+    y_normalized = (y_value - y_center) / x_center
 
-    left_speed = max_speed * y_normalized - max_speed * x_normalized
-    right_speed = max_speed * y_normalized + max_speed * x_normalized
+    forward_speed = max_speed * abs(y_normalized)
+    turn_speed = max_speed * x_normalized
 
-    # Zorg ervoor dat de snelheid binnen het geldige bereik ligt
-    left_speed = min(max_speed, max(-max_speed, left_speed))
-    right_speed = min(max_speed, max(-max_speed, right_speed))
+    if y_normalized < 0:  # Omgekeerde polariteit voor achteruit
+        left_speed = forward_speed - turn_speed
+        right_speed = forward_speed + turn_speed
+    else:
+        left_speed = -forward_speed - turn_speed
+        right_speed = -forward_speed + turn_speed
 
     # Stuur de motoren aan op basis van de snelheden
     drive_motors(left_speed, right_speed)
