@@ -5,6 +5,9 @@ import analogio
 import math
 import neopixel
 import adafruit_hcsr04
+from lcd.lcd import LCD
+from lcd.i2c_pcf8574_interface import I2CPCF8574Interface
+from lcd.lcd import CursorMode
 
 # Definieer pinnen
 x_pin = board.A0  # Analoge X-as van de joystick
@@ -29,10 +32,10 @@ buffer_afstand = 10  # Stel hier de gewenste bufferafstand in (in centimeters)
 achteruit_rijd_tijd = 1.0  # Tijd om achteruit te rijden in seconden
 
 # Pin-initialisatie
-in1 = pwmio.PWMOut(in1_pin, frequency=1000, duty_cycle=0)  # Pas de frequentie aan indien nodig
-in2 = pwmio.PWMOut(in2_pin, frequency=1000, duty_cycle=0)  # Pas de frequentie aan indien nodig
-in3 = pwmio.PWMOut(in3_pin, frequency=1000, duty_cycle=0)  # Pas de frequentie aan indien nodig
-in4 = pwmio.PWMOut(in4_pin, frequency=1000, duty_cycle=0)  # Pas de frequentie aan indien nodig
+in1 = pwmio.PWMOut(in1_pin, frequency=1000, duty_cycle=0)
+in2 = pwmio.PWMOut(in2_pin, frequency=1000, duty_cycle=0)
+in3 = pwmio.PWMOut(in3_pin, frequency=1000, duty_cycle=0)
+in4 = pwmio.PWMOut(in4_pin, frequency=1000, duty_cycle=0)
 
 # Joystick-initialisatie
 x_axis = analogio.AnalogIn(x_pin)
@@ -40,6 +43,10 @@ y_axis = analogio.AnalogIn(y_pin)
 
 # Sonarsensor-initialisatie
 sonar = adafruit_hcsr04.HCSR04(trigger_pin, echo_pin)
+
+# I2C-interface voor LCD-scherm
+i2c = board.I2C()
+lcd = LCD(I2CPCF8574Interface(i2c, 0x27), num_rows=2, num_cols=16)
 
 # Variabele voor NeoPixel-knipperen
 neo_pixel_on = False
@@ -124,15 +131,13 @@ def rij_naar_achteren():
     time.sleep(achteruit_rijd_tijd)  # Wacht de opgegeven tijd
     drive_motors(0, 0)  # Stop de motoren
 
+
+
 # Hoofdcode
 while True:
     x_value = x_axis.value
     y_value = y_axis.value
 
-    print("X-waarde:", x_value)
-    print("Y-waarde:", y_value)
-
-    # Bereken de snelheden op basis van de joystickwaarden
     x_center = 32000
     y_center = 32000
     max_speed = 2**16 - 1
@@ -142,19 +147,39 @@ while True:
 
     forward_speed = max_speed * abs(y_normalized)
     turn_speed = max_speed * x_normalized
-
-    if y_normalized < 0:  # Omgekeerde polariteit voor achteruit
-        left_speed = forward_speed - turn_speed
-        right_speed = forward_speed + turn_speed
-    else:
-        left_speed = -forward_speed - turn_speed
-        right_speed = -forward_speed + turn_speed
-
-    # Stuur de motoren aan op basis van de snelheden
-    drive_motors(left_speed, right_speed)
     
-    # Stop de auto als een obstakel wordt gedetecteerd
-    stop_if_obstacle()
+    try:
+        distance = sonar.distance
+        if distance is not None:
+            lcd.clear()  # Wis het scherm
 
-    time.sleep(0.1)  # Kleinere pauze om de responsiviteit te verhogen
-    
+            lcd.print("Afstand: {}".format(distance))
+
+        # Bepaal de tekst voor de joystickstatus
+        joystick_status = ""
+        if abs(x_normalized) < drempel_percentage and abs(y_normalized) < drempel_percentage:
+            joystick_status = "stick: Inactief"
+        else:
+            joystick_status = "stick: Actief"
+
+        # Voeg de joystickstatus toe aan de bestaande tekst
+        lcd.print(joystick_status)
+
+
+
+        if y_normalized < 0:
+            left_speed = forward_speed - turn_speed
+            right_speed = forward_speed + turn_speed
+        else:
+            left_speed = -forward_speed - turn_speed
+            right_speed = -forward_speed + turn_speed
+
+        drive_motors(left_speed, right_speed)
+
+        stop_if_obstacle()
+
+        time.sleep(0.1)  # Kleinere pauze om de responsiviteit te verhogen
+
+    except RuntimeError as e:
+        # Als er een time-out optreedt, behandel deze dan hier
+        print("Fout bij het meten van de afstand:", e)
