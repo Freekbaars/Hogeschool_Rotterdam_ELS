@@ -3,6 +3,11 @@ import time
 import pwmio
 import analogio
 import math
+import neopixel
+<<<<<<< HEAD
+=======
+import adafruit_hcsr04
+>>>>>>> 5cadfd08851067d57c3ede694a23865a0e376109
 
 # Definieer pinnen
 x_pin = board.A0  # Analoge X-as van de joystick
@@ -12,6 +17,25 @@ in1_pin = board.D0
 in2_pin = board.D1
 in3_pin = board.D2
 in4_pin = board.D3
+
+<<<<<<< HEAD
+=======
+trigger_pin = board.D8
+echo_pin = board.D9
+
+>>>>>>> 5cadfd08851067d57c3ede694a23865a0e376109
+# Definieer NeoPixel
+num_pixels = 1
+neopixel_pin = board.NEOPIXEL
+pixels = neopixel.NeoPixel(neopixel_pin, num_pixels, brightness=0.3)
+
+# Definieer de drempelwaarde als een aanpasbare variabele
+drempel_percentage = 5 / 100  # Stel hier je gewenste drempelwaarde in
+<<<<<<< HEAD
+=======
+buffer_afstand = 10  # Stel hier de gewenste bufferafstand in (in centimeters)
+achteruit_rijd_tijd = 1.0  # Tijd om achteruit te rijden in seconden
+>>>>>>> 5cadfd08851067d57c3ede694a23865a0e376109
 
 # Pin-initialisatie
 in1 = pwmio.PWMOut(in1_pin, frequency=1000, duty_cycle=0)  # Pas de frequentie aan indien nodig
@@ -23,10 +47,40 @@ in4 = pwmio.PWMOut(in4_pin, frequency=1000, duty_cycle=0)  # Pas de frequentie a
 x_axis = analogio.AnalogIn(x_pin)
 y_axis = analogio.AnalogIn(y_pin)
 
+<<<<<<< HEAD
+=======
+# Sonarsensor-initialisatie
+sonar = adafruit_hcsr04.HCSR04(trigger_pin, echo_pin)
+
+>>>>>>> 5cadfd08851067d57c3ede694a23865a0e376109
+# Variabele voor NeoPixel-knipperen
+neo_pixel_on = False
+
 # Functies voor beweging
 def drive_motors(left_speed, right_speed):
     left_speed = min(max(-max_speed, left_speed), max_speed)
     right_speed = min(max(-max_speed, right_speed), max_speed)
+
+    global neo_pixel_on  # Gebruik de globale variabele
+
+    if abs(x_normalized) < drempel_percentage and abs(y_normalized) < drempel_percentage:
+        # Als de joystick binnen de drempel valt, schakel NeoPixel in rood in en laat deze knipperen
+        neo_pixel_on = not neo_pixel_on  # Toggle de status van de NeoPixel
+        if neo_pixel_on:
+            pixels.fill((255, 0, 0))  # Rood
+        else:
+            pixels.fill((0, 0, 0))  # Uit
+
+        # Schakel de motoren uit
+        left_speed = 0
+        right_speed = 0
+    else:
+        # Zo niet, schakel NeoPixel uit
+        neo_pixel_on = False
+        if left_speed != 0 or right_speed != 0:
+            pixels.fill((0, 0, 255))  # Blauw
+        else:
+            pixels.fill((0, 0, 0))  # Uit
 
     if left_speed >= 0:
         left_FWD(left_speed)
@@ -64,6 +118,24 @@ def set_pwm_duty_cycle(pwm_pin, duty_cycle):
         else:
             pwm_pin.duty_cycle = max_duty_cycle
 
+def stop_if_obstacle():
+    try:
+        distance = sonar.distance
+        if distance is not None and distance < buffer_afstand:
+            # Als de gemeten afstand kleiner is dan de buffer_afstand, stop de auto en rijd achteruit
+            drive_motors(0, 0)
+            rij_naar_achteren()
+    except RuntimeError as e:
+        # Als er een time-out optreedt, behandel deze dan hier
+        print("Fout bij het meten van de afstand:", e)
+
+def rij_naar_achteren():
+    left_speed = -max_speed  # Achteruit rijden
+    right_speed = -max_speed  # Achteruit rijden
+    drive_motors(left_speed, right_speed)  # Rijd achteruit
+    time.sleep(achteruit_rijd_tijd)  # Wacht de opgegeven tijd
+    drive_motors(0, 0)  # Stop de motoren
+
 # Hoofdcode
 while True:
     x_value = x_axis.value
@@ -92,5 +164,8 @@ while True:
 
     # Stuur de motoren aan op basis van de snelheden
     drive_motors(left_speed, right_speed)
+    
+    # Stop de auto als een obstakel wordt gedetecteerd
+    stop_if_obstacle()
 
     time.sleep(0.1)  # Kleinere pauze om de responsiviteit te verhogen
