@@ -1,7 +1,7 @@
 # Hogeschool_Rotterdam_ELS
 code voor de lessen ELS
 
-opdrachten:
+## opdrachten:
 - 1 x
 - 2 x
 - 3 x
@@ -10,7 +10,7 @@ opdrachten:
 - 6
 - 7
 
-autotje:
+## autotje:
 
 - leerdoel 1 (1)
 - leerdoel 2 (2)
