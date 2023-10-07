@@ -1,3 +1,4 @@
+#import Librerys
 import board
 import time
 import pwmio
@@ -8,6 +9,7 @@ import adafruit_hcsr04
 from lcd.lcd import LCD
 from lcd.i2c_pcf8574_interface import I2CPCF8574Interface
 from lcd.lcd import CursorMode
+
 
 # Definieer pinnen
 x_pin = board.A0  # Analoge X-as van de joystick
@@ -21,6 +23,8 @@ in4_pin = board.D3
 trigger_pin = board.D8
 echo_pin = board.D9
 
+
+
 # Definieer NeoPixel
 num_pixels = 1
 neopixel_pin = board.NEOPIXEL
@@ -30,6 +34,8 @@ pixels = neopixel.NeoPixel(neopixel_pin, num_pixels, brightness=0.3)
 drempel_percentage = 5 / 100  # Stel hier je gewenste drempelwaarde in
 buffer_afstand = 10  # Stel hier de gewenste bufferafstand in (in centimeters)
 achteruit_rijd_tijd = 1.0  # Tijd om achteruit te rijden in seconden
+
+
 
 # Pin-initialisatie
 in1 = pwmio.PWMOut(in1_pin, frequency=1000, duty_cycle=0)
@@ -51,15 +57,18 @@ lcd = LCD(I2CPCF8574Interface(i2c, 0x27), num_rows=2, num_cols=16)
 # Variabele voor NeoPixel-knipperen
 neo_pixel_on = False
 
+
+
+
 # Functies voor beweging
+
 def drive_motors(left_speed, right_speed):
     left_speed = min(max(-max_speed, left_speed), max_speed)
     right_speed = min(max(-max_speed, right_speed), max_speed)
 
     global neo_pixel_on  # Gebruik de globale variabele
 
-    if abs(x_normalized) < drempel_percentage and abs(y_normalized) < drempel_percentage:
-        # Als de joystick binnen de drempel valt, schakel NeoPixel in rood in en laat deze knipperen
+    if abs(x_normalized) < drempel_percentage and abs(y_normalized) < drempel_percentage: # Als de joystick binnen de drempel valt, schakel NeoPixel in rood in en laat deze knipperen
         neo_pixel_on = not neo_pixel_on  # Toggle de status van de NeoPixel
         if neo_pixel_on:
             pixels.fill((255, 0, 0))  # Rood
@@ -69,8 +78,8 @@ def drive_motors(left_speed, right_speed):
         # Schakel de motoren uit
         left_speed = 0
         right_speed = 0
-    else:
-        # Zo niet, schakel NeoPixel uit
+
+    else: # Zo niet, schakel NeoPixel uit
         neo_pixel_on = False
         if left_speed != 0 or right_speed != 0:
             pixels.fill((0, 0, 255))  # Blauw
@@ -116,12 +125,10 @@ def set_pwm_duty_cycle(pwm_pin, duty_cycle):
 def stop_if_obstacle():
     try:
         distance = sonar.distance
-        if distance is not None and distance < buffer_afstand:
-            # Als de gemeten afstand kleiner is dan de buffer_afstand, stop de auto en rijd achteruit
+        if distance is not None and distance < buffer_afstand: # Als de gemeten afstand kleiner is dan de buffer_afstand, stop de auto en rijd achteruit
             drive_motors(0, 0)
             rij_naar_achteren()
-    except RuntimeError as e:
-        # Als er een time-out optreedt, behandel deze dan hier
+    except RuntimeError as e: # Als er een time-out optreedt, behandel deze dan hier
         print("Fout bij het meten van de afstand:", e)
 
 def rij_naar_achteren():
@@ -153,8 +160,8 @@ while True:
         if distance is not None:
             lcd.clear()  # Wis het scherm
 
-            lcd.print("Afstand: {}".format(distance))
-
+            lcd.print("Afstand: {}".format(distance))  
+            
         # Bepaal de tekst voor de joystickstatus
         joystick_status = ""
         if abs(x_normalized) < drempel_percentage and abs(y_normalized) < drempel_percentage:
