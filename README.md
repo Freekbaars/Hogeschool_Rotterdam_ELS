@@ -10,4 +10,16 @@ opdrachten:
 - 6
 - 7
 
-autotje: main funties gedefineerd
+autotje:
+
+|1|1|1|
+|2|2|2|
+
+
+leerdoel 1 ()
+leerdeol 2
+leerdoel 3
+
+leerdoel 4
+leerdoel 5
+leerdoel 6
