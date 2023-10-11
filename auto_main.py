@@ -116,12 +116,10 @@ def set_pwm_duty_cycle(pwm_pin, duty_cycle):
 def stop_if_obstacle():
     try:
         distance = sonar.distance
-        if distance is not None and distance < buffer_afstand:
-            # Als de gemeten afstand kleiner is dan de buffer_afstand, stop de auto en rijd achteruit
+        if distance is not None and distance < buffer_afstand: # Als de gemeten afstand kleiner is dan de buffer_afstand, stop de auto en rijd achteruit
             drive_motors(0, 0)
             rij_naar_achteren()
-    except RuntimeError as e:
-        # Als er een time-out optreedt, behandel deze dan hier
+    except RuntimeError as e: # Als er een time-out optreedt, behandel deze dan hier
         print("Fout bij het meten van de afstand:", e)
 
 def rij_naar_achteren():
@@ -148,6 +146,7 @@ while True:
     print(x_normalized)
     print(y_normalized)
     print(sonar.distance,"cm")
+    
     forward_speed = max_speed * abs(y_normalized)
     turn_speed = max_speed * x_normalized
     
@@ -156,14 +155,14 @@ while True:
         if distance is not None:
             lcd.clear()  # Wis het scherm
 
-            lcd.print("Afstand: {}".format(distance))
+            lcd.print("Afstand: {}".format(distance)+"\n")
 
         # Bepaal de tekst voor de joystickstatus
         joystick_status = ""
         if abs(x_normalized) < drempel_percentage and abs(y_normalized) < drempel_percentage:
-            joystick_status = "stick: Inactief"
+            joystick_status = "control:Inactief"
         else:
-            joystick_status = "stick: Actief"
+            joystick_status = "control:Actief"
 
         # Voeg de joystickstatus toe aan de bestaande tekst
         lcd.print(joystick_status)
