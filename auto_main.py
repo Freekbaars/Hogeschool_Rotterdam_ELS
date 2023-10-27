@@ -87,6 +87,7 @@ def drive_motors(left_speed, right_speed):
     else:
         right_BWD(-right_speed)
 
+# moter aansturing
 def left_FWD(DutyF):
     set_pwm_duty_cycle(in1, DutyF)
     set_pwm_duty_cycle(in2, 0)
@@ -113,6 +114,7 @@ def set_pwm_duty_cycle(pwm_pin, duty_cycle):
         else:
             pwm_pin.duty_cycle = max_duty_cycle
 
+# Functie voor het stoppen van de auto als er een obstakel is
 def stop_if_obstacle():
     try:
         distance = sonar.distance
@@ -122,6 +124,7 @@ def stop_if_obstacle():
     except RuntimeError as e: # Als er een time-out optreedt, behandel deze dan hier
         print("Fout bij het meten van de afstand:", e)
 
+# Functie voor het achteruit rijden
 def rij_naar_achteren():
     left_speed = -max_speed  # Achteruit rijden
     right_speed = -max_speed  # Achteruit rijden
@@ -150,6 +153,7 @@ while True:
     forward_speed = max_speed * abs(y_normalized)
     turn_speed = max_speed * x_normalized
     
+    # Bepaal de afstand
     try:
         distance = sonar.distance
         if distance is not None:
@@ -168,7 +172,7 @@ while True:
         lcd.print(joystick_status)
 
 
-
+        # Bepaal de snelheid van de motoren
         if y_normalized < 0:
             left_speed = forward_speed - turn_speed
             right_speed = forward_speed + turn_speed

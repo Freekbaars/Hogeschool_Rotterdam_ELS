@@ -18,9 +18,6 @@ import pygame
 import adafruit_hcsr04
 
 
-#___________________________________________________________
-
-
 #variable
 vijlighijdsmarge = 0.5
 
@@ -30,9 +27,6 @@ midSpeed = 700
 maxSpeed = 1024
 speed = midSpeed
 action = 0
-
-
-#___________________________________________________________
 
 
 #def pins
@@ -264,65 +258,5 @@ def remoteControl () :
     response = html
     conn.send(response)
     conn.close()
-
-
-def yojsticControl():
-    global auto, action, speed
-    pygame.init()
-    joystick = pygame.joystick.Joystick(0)
-    joystick.init()
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.JOYAXISMOTION:
-                if joystick.get_axis(1) < -0.5:
-                    print('+forward')
-                    action = 1
-                elif joystick.get_axis(1) > 0.5:
-                    print('+back')
-                    action = 2
-                elif joystick.get_axis(0) < -0.5:
-                    print('+left')
-                    action = 3
-                elif joystick.get_axis(0) > 0.5:
-                    print('+right')
-                    action = 4
-                else:
-                    print('+stop')
-                    action = 0
-            elif event.type == pygame.JOYBUTTONDOWN:
-                if joystick.get_button(0):
-                    print('+L')
-                    action = 5
-                elif joystick.get_button(1):
-                    print('+R')
-                    action = 6
-                elif joystick.get_button(2):
-                    print('+fast=')
-                    speed = maxSpeed
-                    print(speed)
-                elif joystick.get_button(3):
-                    print('+slow=')
-                    speed = minSpeed
-                    print(speed)
-                elif joystick.get_button(4):
-                    print('+mid=')
-                    speed = midSpeed
-                    print(speed)
-                elif joystick.get_button(5):
-                    auto = False
-                    action = 0
-                    print('+manual=')
-                elif joystick.get_button(6):
-                    auto = True
-                    action = 0
-                    print('+autoDrive')
-
-
-while True
-    if auto:
-        if forward_distance() > vijlighijdsmarge:
-            forward()
-        else:
-            stop()
 
             
